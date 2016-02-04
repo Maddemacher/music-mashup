@@ -1,0 +1,10 @@
+{
+  "name": "ASP.NET",
+  "private": true,
+  "dependencies": {
+    "angular": "~1.4.6",
+    "google-closure-library": "*",
+    "angular-ui-router": "0.2.14",
+    "bootstrap": "3.3.6"
+  }
+}

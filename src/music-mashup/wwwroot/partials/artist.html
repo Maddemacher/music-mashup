@@ -1,0 +1,31 @@
+<div> 
+	<h1>{{title}}</h1>
+	<img ng-src="{{coverArt}}">
+	<div>
+		<span ng-bind-html="description()"></span>
+	</div>
+
+	<div class="well">
+		<label>Json for Artist</label>
+		<br/>
+		<span>{{artist}}</span>		
+	</div>
+
+	<div class="well">
+		<label>MusicBrainz for Artist</label>
+		<br/>
+		<span>{{mb}}</span>		
+	</div>
+
+	<div class="well">
+		<label>Relational Data</label>
+		<br/>
+		<span>{{relationalData}}</span>
+	</div>
+
+	<div class="well">
+		<label>Interesting Relations</label>
+		<br/>
+		<span>{{interestingRelations}}</span>
+	</div>
+</div>
