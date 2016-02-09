@@ -6,7 +6,9 @@ A website written with Noir and ClojureScript.
 
 ```bash
 lein deps
-lein run
+lein cljsbuild auto
+
+Start the visual studio project and run it with IIS express
 ```
 
 ## License

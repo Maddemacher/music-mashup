@@ -1,7 +1,7 @@
 (ns musicmashup.artistcard
-	(:use-macros 
+	(:use-macros
 		[purnam.core :only [obj arr ! def.n]]
-		[gyr.core :only [def.controller 
+		[gyr.core :only [def.controller
 		def.directive]])
 	(:require [musicmashup.helpers :as h]
 		[musicmashup.constants :as constants]
@@ -9,7 +9,7 @@
 		[musicmashup.http :as http]))
 
 (defn openArtist[a, $state $stateParams]
-	(.go $state "artist" 
+	(.go $state "artist"
 		#js {
 			:artistId (.-musicBrainzId a)
 			:artist a
@@ -22,7 +22,7 @@
 	(! $scope.openArtist #(openArtist % $state $stateParams))
  	(! $scope.hasArtist hasArtist))
 
-(def.directive musicMashup.artistcard [] 
+(def.directive musicMashup.artistcard []
 	(clj->js {
 		:templateUrl "partials/artistCard.html"
 		:restrict "E"

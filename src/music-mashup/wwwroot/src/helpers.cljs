@@ -3,11 +3,12 @@
 (defn find-nested
 	[m k]
 	(->> (tree-seq coll? identity m)
-		(filter map?)
-		(some k)))
+	(filter map?)
+	(some k)))
 
 (defn find-sveral-nested
 	[m k]
-	(->> (tree-seq coll? identity m)
+	(->>
+		(tree-seq coll? identity m)
 		(filter map?)
 		(filter k)))

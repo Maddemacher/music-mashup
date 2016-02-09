@@ -1,30 +1,19 @@
-<div> 
+<div>
 	<h1>{{title}}</h1>
 	<img ng-src="{{coverArt}}">
 	<div>
 		<span ng-bind-html="description()"></span>
 	</div>
 
-	<div class="well">
-		<label>Json for Artist</label>
+	<div class="well" ng-if="showWiki">
+		<label>Wiki</label>
+		<h2>{{wikiTitle}}</h2>
 		<br/>
-		<span>{{artist}}</span>		
+		<div ng-bind-html="wikiDescription"></div>
 	</div>
 
-	<div class="well">
-		<label>MusicBrainz for Artist</label>
-		<br/>
-		<span>{{mb}}</span>		
-	</div>
-
-	<div class="well">
-		<label>Relational Data</label>
-		<br/>
-		<span>{{relationalData}}</span>
-	</div>
-
-	<div class="well">
-		<label>Interesting Relations</label>
+	<div class="well" ng-if="showAlbums">
+		<label>Albums</label>
 		<br/>
 		<span>{{interestingRelations}}</span>
 	</div>

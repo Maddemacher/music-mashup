@@ -12,11 +12,11 @@ musicmashup.artistcard.hasArtist = (function musicmashup$artistcard$hasArtist(ar
 return cljs.core.some_QMARK_.call(null,artist);
 });
 musicmashup.artistcard.musicMashup_artistCardController = ["$scope","$state","$stateParams",(function ($scope,$state,$stateParams){
-var o_SHARP__8898 = $scope;
-(o_SHARP__8898["openArtist"] = ((function (o_SHARP__8898){
-return (function (p1__8897_SHARP_){
-return musicmashup.artistcard.openArtist.call(null,p1__8897_SHARP_,$state,$stateParams);
-});})(o_SHARP__8898))
+var o_SHARP__9816 = $scope;
+(o_SHARP__9816["openArtist"] = ((function (o_SHARP__9816){
+return (function (p1__9815_SHARP_){
+return musicmashup.artistcard.openArtist.call(null,p1__9815_SHARP_,$state,$stateParams);
+});})(o_SHARP__9816))
 );
 
 

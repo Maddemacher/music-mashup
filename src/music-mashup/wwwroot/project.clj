@@ -7,13 +7,15 @@
                  [fetch "0.1.0-alpha2" :exclusions [org.clojure/clojure]]
                  [crate "0.2.3"]
                  [noir "1.3.0"]
-				 [im.chit/gyr "0.3.1"]
-				 [org.clojure/clojurescript "1.7.228"]]
+				         [im.chit/gyr "0.3.1"]
+                 [org.clojure/clojurescript "1.7.228"]
+                 [org.clojure/data.json "0.2.6"]]
  :plugins [[lein-cljsbuild "1.1.2"]]
   :cljsbuild {
+    :repl-listen-port 9000
     :builds [{
         ; The path to the top-level ClojureScript source directory:
-        :source-paths ["C:/Git/Music Mashup/music-mashup/src/music-mashup/wwwroot/src"]
+        :source-paths ["./src"]
         ; The standard ClojureScript compiler options:
         ; (See the ClojureScript compiler documentation for details.)
         :compiler {
