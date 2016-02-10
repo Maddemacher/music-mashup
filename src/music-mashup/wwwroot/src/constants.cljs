@@ -1,6 +1,6 @@
 (ns musicmashup.constants)
 
-(def bandArtBaseUrl "http://coverartarchive.org/release-group/")
+(def coverArtArchiveBaseUrl "http://coverartarchive.org/release-group/")
 
 (def musicBrainzBaseUrl "http://www.musicbrainz.org/ws/2/artist?fmt=json&jsoncallback=jsonpcallback&inc=url-rels+release-groups&query=")
 
@@ -19,7 +19,5 @@
 (def wikiRelationTag "wikipedia")
 
 (def socialNetworkRelationTag "social network")
-
-(def albumRelationTag "albums")
 
 (def lastfmRelationTag "last.fm")

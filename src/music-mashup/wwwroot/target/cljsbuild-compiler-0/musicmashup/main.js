@@ -26,8 +26,8 @@ return new cljs.core.PersistentArrayMap(null, 5, [new cljs.core.Keyword(null,"mu
 });
 musicmashup.main.search = (function musicmashup$main$search($http,$scope){
 return musicmashup.main.get_music_brainz_data.call(null,$http,$scope.artist,(function (data){
-var scraped = cljs.core.mapv.call(null,(function (p1__9810_SHARP_){
-return musicmashup.main.scrape_music_brainz.call(null,p1__9810_SHARP_);
+var scraped = cljs.core.mapv.call(null,(function (p1__10072_SHARP_){
+return musicmashup.main.scrape_music_brainz.call(null,p1__10072_SHARP_);
 }),data);
 var o_SHARP_ = $scope;
 (o_SHARP_["artistData"] = cljs.core.clj__GT_js.call(null,scraped));
@@ -36,15 +36,15 @@ return o_SHARP_;
 }));
 });
 musicmashup.main.musicMashup_mainController = ["$scope","$http","$sce",(function ($scope,$http,$sce){
-var o_SHARP__9811 = $scope;
-(o_SHARP__9811["artist"] = "Nirvana");
+var o_SHARP__10073 = $scope;
+(o_SHARP__10073["artist"] = "Nirvana");
 
 
-var o_SHARP__9812 = $scope;
-(o_SHARP__9812["search"] = ((function (o_SHARP__9812){
+var o_SHARP__10074 = $scope;
+(o_SHARP__10074["search"] = ((function (o_SHARP__10074){
 return (function (){
 return musicmashup.main.search.call(null,$http,$scope);
-});})(o_SHARP__9812))
+});})(o_SHARP__10074))
 );
 
 

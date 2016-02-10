@@ -29935,13 +29935,9 @@ musicmashup.helpers.find_nested = function musicmashup$helpers$find_nested(m, k)
 musicmashup.helpers.find_sveral_nested = function musicmashup$helpers$find_sveral_nested(m, k) {
   return cljs.core.filter.call(null, k, cljs.core.filter.call(null, cljs.core.map_QMARK_, cljs.core.tree_seq.call(null, cljs.core.coll_QMARK_, cljs.core.identity, m)));
 };
-goog.provide("musicmashup.app");
-goog.require("cljs.core");
-cljs.core.enable_console_print_BANG_.call(null);
-musicmashup.app.musicMashup = angular.module("musicMashup", ["ui.router"]);
 goog.provide("musicmashup.constants");
 goog.require("cljs.core");
-musicmashup.constants.bandArtBaseUrl = "http://coverartarchive.org/release-group/";
+musicmashup.constants.coverArtArchiveBaseUrl = "http://coverartarchive.org/release-group/";
 musicmashup.constants.musicBrainzBaseUrl = "http://www.musicbrainz.org/ws/2/artist?fmt\x3djson\x26jsoncallback\x3djsonpcallback\x26inc\x3durl-rels+release-groups\x26query\x3d";
 musicmashup.constants.musicBrainzJsonTag = "\x26fmt\x3djson";
 musicmashup.constants.musicBrainzReleaseGroupsTag = "\x26inc\x3durl-rels+release-groups";
@@ -29951,7 +29947,6 @@ musicmashup.constants.nirvanaWiki = "https://en.wikipedia.org/w/api.php?action\x
 musicmashup.constants.wikiBaseUrl = "https://en.wikipedia.org/w/api.php?rawcontinue\x3dtrue\x26action\x3dquery\x26format\x3djson\x26prop\x3dextracts\x26callback\x3dJSON_CALLBACK\x26titles\x3d";
 musicmashup.constants.wikiRelationTag = "wikipedia";
 musicmashup.constants.socialNetworkRelationTag = "social network";
-musicmashup.constants.albumRelationTag = "albums";
 musicmashup.constants.lastfmRelationTag = "last.fm";
 goog.provide("musicmashup.http");
 goog.require("cljs.core");
@@ -30358,98 +30353,141 @@ clojure.string.ends_with_QMARK_ = function clojure$string$ends_with_QMARK_(s, su
 clojure.string.includes_QMARK_ = function clojure$string$includes_QMARK_(s, substr) {
   return goog.string.contains(s, substr);
 };
-goog.provide("musicmashup.artist");
+goog.provide("musicmashup.wiki");
 goog.require("cljs.core");
-goog.require("musicmashup.helpers");
-goog.require("musicmashup.constants");
-goog.require("musicmashup.app");
 goog.require("musicmashup.http");
+goog.require("musicmashup.constants");
+goog.require("musicmashup.helpers");
 goog.require("clojure.string");
-musicmashup.artist.artistWiki = cljs.core.atom.call(null, cljs.core.PersistentArrayMap.EMPTY);
-musicmashup.artist.artistSocialMedia = cljs.core.atom.call(null, cljs.core.PersistentArrayMap.EMPTY);
-musicmashup.artist.get_resource_url = function musicmashup$artist$get_resource_url(resource) {
+musicmashup.wiki.get_resource_url = function musicmashup$wiki$get_resource_url(resource) {
   return (new cljs.core.Keyword(null, "resource", "resource", 251898836)).cljs$core$IFn$_invoke$arity$1((new cljs.core.Keyword(null, "url", "url", 276297046)).cljs$core$IFn$_invoke$arity$1(resource));
 };
-musicmashup.artist.get_wiki = function musicmashup$artist$get_wiki($http, url) {
+musicmashup.wiki.get_wiki = function musicmashup$wiki$get_wiki($http, url, callback) {
   var wikiUrl = [cljs.core.str(musicmashup.constants.wikiBaseUrl), cljs.core.str(cljs.core.last.call(null, clojure.string.split.call(null, url, "/")))].join("");
   return musicmashup.http.jsonpRequest.call(null, $http, wikiUrl, function(wikiUrl) {
-    return function(response) {
-      return cljs.core.reset_BANG_.call(null, musicmashup.artist.artistWiki, new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null, "title", "title", 636505583), musicmashup.helpers.find_nested.call(null, response, new cljs.core.Keyword(null, "title", "title", 636505583)), new cljs.core.Keyword(null, "description", "description", -1428560544), musicmashup.helpers.find_nested.call(null, response, new cljs.core.Keyword(null, "extract", "extract", -1241084618))], null));
+    return function(p1__11332_SHARP_) {
+      return callback.call(null, new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null, "title", "title", 636505583), musicmashup.helpers.find_nested.call(null, p1__11332_SHARP_, new cljs.core.Keyword(null, "title", "title", 636505583)), new cljs.core.Keyword(null, "description", "description", -1428560544), musicmashup.helpers.find_nested.call(null, p1__11332_SHARP_, new cljs.core.Keyword(null, "extract", "extract", -1241084618))], null));
     };
   }(wikiUrl));
 };
-musicmashup.artist.get_albums = function musicmashup$artist$get_albums($http, url) {
-  return null;
+musicmashup.wiki.setup_resource = function musicmashup$wiki$setup_resource(getter, $http, callback, relation) {
+  return getter.call(null, $http, musicmashup.wiki.get_resource_url.call(null, relation), callback);
 };
-musicmashup.artist.setup_resource = function musicmashup$artist$setup_resource(getter, relation, $http) {
-  return getter.call(null, $http, musicmashup.artist.get_resource_url.call(null, relation));
-};
-musicmashup.artist.setup_social_network = function musicmashup$artist$setup_social_network(relation, $http) {
-  return cljs.core.reset_BANG_.call(null, musicmashup.artist.artistSocialMedia, new cljs.core.PersistentArrayMap(null, 1, [new cljs.core.Keyword(null, "title", "title", 636505583), "Social"], null));
-};
-musicmashup.artist.scrape_relation = function musicmashup$artist$scrape_relation(rel) {
+musicmashup.wiki.scrape_relation = function musicmashup$wiki$scrape_relation(rel) {
   return new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null, "type", "type", 1174270348), (new cljs.core.Keyword(null, "type", "type", 1174270348)).cljs$core$IFn$_invoke$arity$1(rel), new cljs.core.Keyword(null, "url", "url", 276297046), (new cljs.core.Keyword(null, "url", "url", 276297046)).cljs$core$IFn$_invoke$arity$1(rel)], null);
 };
-musicmashup.artist.scrape_relations = function musicmashup$artist$scrape_relations(relations) {
-  return cljs.core.map.call(null, musicmashup.artist.scrape_relation, relations);
+musicmashup.wiki.scrape_relations = function musicmashup$wiki$scrape_relations(relations) {
+  return cljs.core.map.call(null, musicmashup.wiki.scrape_relation, relations);
 };
-musicmashup.artist.setup_relational_data = function musicmashup$artist$setup_relational_data(data) {
-  return musicmashup.artist.scrape_relations.call(null, (new cljs.core.Keyword(null, "relations", "relations", -427124442)).cljs$core$IFn$_invoke$arity$1(data));
+musicmashup.wiki.setup_relational_data = function musicmashup$wiki$setup_relational_data(data) {
+  return musicmashup.wiki.scrape_relations.call(null, (new cljs.core.Keyword(null, "relations", "relations", -427124442)).cljs$core$IFn$_invoke$arity$1(data));
 };
-musicmashup.artist.get_relation_of_type = function musicmashup$artist$get_relation_of_type(type, relations) {
-  return cljs.core.some.call(null, function(p1__9836_SHARP_) {
-    if (cljs.core._EQ_.call(null, type, (new cljs.core.Keyword(null, "type", "type", 1174270348)).cljs$core$IFn$_invoke$arity$1(p1__9836_SHARP_))) {
-      return p1__9836_SHARP_;
+musicmashup.wiki.get_relation_of_type = function musicmashup$wiki$get_relation_of_type(type, relations) {
+  return cljs.core.some.call(null, function(p1__11333_SHARP_) {
+    if (cljs.core._EQ_.call(null, type, (new cljs.core.Keyword(null, "type", "type", 1174270348)).cljs$core$IFn$_invoke$arity$1(p1__11333_SHARP_))) {
+      return p1__11333_SHARP_;
     } else {
       return null;
     }
   }, relations);
 };
-musicmashup.artist.evaluate_relations = function musicmashup$artist$evaluate_relations(relations) {
-  cljs.core.println.call(null, relations);
-  return cljs.core.remove.call(null, cljs.core.nil_QMARK_, cljs.core._conj.call(null, cljs.core._conj.call(null, cljs.core._conj.call(null, cljs.core.List.EMPTY, musicmashup.artist.get_relation_of_type.call(null, musicmashup.constants.albumRelationRag, relations)), musicmashup.artist.get_relation_of_type.call(null, musicmashup.constants.socialNetworkRelationTag, relations)), musicmashup.artist.get_relation_of_type.call(null, musicmashup.constants.wikiRelationTag, relations)));
+musicmashup.wiki.setup_wiki = function musicmashup$wiki$setup_wiki($http, relationalData, callback) {
+  return musicmashup.wiki.setup_resource.call(null, musicmashup.wiki.get_wiki, $http, callback, musicmashup.wiki.get_relation_of_type.call(null, musicmashup.constants.wikiRelationTag, musicmashup.wiki.setup_relational_data.call(null, relationalData)));
 };
-musicmashup.artist.setup_relation_of_type = function musicmashup$artist$setup_relation_of_type(relation, $http) {
-  var pred__9841 = function(p1__9837_SHARP_) {
-    return cljs.core._EQ_.call(null, (new cljs.core.Keyword(null, "type", "type", 1174270348)).cljs$core$IFn$_invoke$arity$1(relation), p1__9837_SHARP_);
-  };
-  var expr__9842 = musicmashup.constants.wikiRelationTag;
-  if (cljs.core.truth_(pred__9841.call(null, musicmashup.artist.setup_resource.call(null, musicmashup.artist.get_wiki, relation, $http), expr__9842))) {
-    return musicmashup.constants.albumRelationTag;
-  } else {
-    return musicmashup.artist.setup_resource.call(null, musicmashup.artist.get_albums, relation, $http);
-  }
+goog.provide("musicmashup.app");
+goog.require("cljs.core");
+cljs.core.enable_console_print_BANG_.call(null);
+musicmashup.app.musicMashup = angular.module("musicMashup", ["ui.router"]);
+goog.provide("musicmashup.albumArt");
+goog.require("cljs.core");
+goog.require("musicmashup.http");
+goog.require("musicmashup.constants");
+musicmashup.albumArt.get_album_art = function musicmashup$albumArt$get_album_art($http, album) {
+  cljs.core.println.call(null, "Get album art for album ", album);
+  return musicmashup.http.getRequest.call(null, $http, [cljs.core.str(musicmashup.constants.coverArtArchiveBaseUrl), cljs.core.str((new cljs.core.Keyword(null, "albumId", "albumId", 1089055910)).cljs$core$IFn$_invoke$arity$1(album))].join(""), function(p1__13990_SHARP_) {
+    if (cljs.core.truth_(p1__13990_SHARP_)) {
+      cljs.core.assoc.call(null, album, new cljs.core.Keyword(null, "coverArtArchive", "coverArtArchive", -1849088059), p1__13990_SHARP_);
+      var index = cljs.core.first.call(null, cljs.core.keep_indexed.call(null, function(idx, alb) {
+        if (cljs.core._EQ_.call(null, (new cljs.core.Keyword(null, "albumId", "albumId", 1089055910)).cljs$core$IFn$_invoke$arity$1(album), (new cljs.core.Keyword(null, "albumId", "albumId", 1089055910)).cljs$core$IFn$_invoke$arity$1(alb))) {
+        } else {
+        }
+        return cljs.core.deref.call(null, musicmashup.albumArt.artistAlbums);
+      }));
+      var updatedAtom = cljs.core.truth_(index) ? cljs.core.assoc.call(null, cljs.core.deref.call(null, musicmashup.albumArt.artistAlbums), index, album) : cljs.core.conj.call(null, cljs.core.deref.call(null, musicmashup.albumArt.artistAlbums), album);
+      cljs.core.println.call(null, updatedAtom);
+      return cljs.core.reset_BANG_.call(null, musicmashup.albumArt.artistAlbums, updatedAtom);
+    } else {
+      return null;
+    }
+  });
 };
-musicmashup.artist.setup_relations = function musicmashup$artist$setup_relations(relations, $http) {
-  return cljs.core.mapv.call(null, function(p1__9844_SHARP_) {
-    return musicmashup.artist.setup_relation_of_type.call(null, p1__9844_SHARP_, $http);
-  }, relations);
+musicmashup.albumArt.scrape_album = function musicmashup$albumArt$scrape_album(album) {
+  return new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null, "albumId", "albumId", 1089055910), (new cljs.core.Keyword(null, "id", "id", -1388402092)).cljs$core$IFn$_invoke$arity$1(album), new cljs.core.Keyword(null, "title", "title", 636505583), (new cljs.core.Keyword(null, "title", "title", 636505583)).cljs$core$IFn$_invoke$arity$1(album)], null);
 };
+musicmashup.albumArt.setup_albums = function musicmashup$albumArt$setup_albums(albums, $http) {
+  var scrapedAlbums = cljs.core.map.call(null, function(p1__13991_SHARP_) {
+    return musicmashup.albumArt.scrape_album.call(null, p1__13991_SHARP_);
+  }, albums);
+  cljs.core.mapv.call(null, function(scrapedAlbums) {
+    return function(p1__13992_SHARP_) {
+      return musicmashup.albumArt.get_album_art.call(null, $http, p1__13992_SHARP_);
+    };
+  }(scrapedAlbums), scrapedAlbums);
+  return cljs.core.println.call(null, "scraped albums", scrapedAlbums);
+};
+musicmashup.albumArt.setup_album_art = function musicmashup$albumArt$setup_album_art(musicbrainzData, $http) {
+  var releaseGroups = (new cljs.core.Keyword(null, "release-groups", "release-groups", -525227460)).cljs$core$IFn$_invoke$arity$1(musicbrainzData);
+  var albums = cljs.core.filter.call(null, function(releaseGroups) {
+    return function(p1__13993_SHARP_) {
+      return cljs.core._EQ_.call(null, (new cljs.core.Keyword(null, "primary-type", "primary-type", -1227348228)).cljs$core$IFn$_invoke$arity$1(p1__13993_SHARP_), "Album");
+    };
+  }(releaseGroups), releaseGroups);
+  cljs.core.println.call(null, "release groups ", releaseGroups);
+  return musicmashup.albumArt.setup_albums.call(null, albums, $http);
+};
+goog.provide("musicmashup.artist");
+goog.require("cljs.core");
+goog.require("musicmashup.constants");
+goog.require("musicmashup.wiki");
+goog.require("musicmashup.app");
+goog.require("musicmashup.albumArt");
+goog.require("musicmashup.http");
+musicmashup.artist.artistWiki = cljs.core.atom.call(null, cljs.core.PersistentArrayMap.EMPTY);
+musicmashup.artist.artistAlbums = cljs.core.atom.call(null, cljs.core.PersistentVector.EMPTY);
 musicmashup.artist.musicMashup_artistController = ["$scope", "$stateParams", "$http", "$sce", function($scope, $stateParams, $http, $sce) {
-  var o_SHARP__9846 = $scope;
-  o_SHARP__9846["showWiki"] = false;
-  var o_SHARP__9847 = $scope;
-  o_SHARP__9847["showAlbums"] = false;
+  var o_SHARP__14112 = $scope;
+  o_SHARP__14112["showWiki"] = false;
+  var o_SHARP__14113 = $scope;
+  o_SHARP__14113["showAlbums"] = false;
   cljs.core.add_watch.call(null, musicmashup.artist.artistWiki, new cljs.core.Keyword(null, "wikiWatcher", "wikiWatcher", 896646724), function(key, atom, old_state, new_state) {
-    var o_SHARP__9848 = $scope;
-    o_SHARP__9848["showWiki"] = true;
-    var o_SHARP__9849 = $scope;
-    o_SHARP__9849["wikiTitle"] = cljs.core.clj__GT_js.call(null, (new cljs.core.Keyword(null, "title", "title", 636505583)).cljs$core$IFn$_invoke$arity$1(new_state));
+    var o_SHARP__14114 = $scope;
+    o_SHARP__14114["showWiki"] = true;
+    var o_SHARP__14115 = $scope;
+    o_SHARP__14115["wikiTitle"] = cljs.core.clj__GT_js.call(null, (new cljs.core.Keyword(null, "title", "title", 636505583)).cljs$core$IFn$_invoke$arity$1(new_state));
     var o_SHARP_ = $scope;
     o_SHARP_["wikiDescription"] = $sce.trustAsHtml(cljs.core.clj__GT_js.call(null, (new cljs.core.Keyword(null, "description", "description", -1428560544)).cljs$core$IFn$_invoke$arity$1(new_state)));
     return o_SHARP_;
   });
-  cljs.core.add_watch.call(null, musicmashup.artist.artistSocialMedia, new cljs.core.Keyword(null, "socialMediaWatcher", "socialMediaWatcher", -511471662), function(key, atom, old_state, new_state) {
+  cljs.core.add_watch.call(null, musicmashup.artist.artistAlbums, new cljs.core.Keyword(null, "albumWatcher", "albumWatcher", -1030345386), function(key, atom, old_state, new_state) {
+    cljs.core.println.call(null, "albums atom changed");
     var o_SHARP_ = $scope;
     o_SHARP_["showAlbums"] = true;
     return o_SHARP_;
   });
   if (cljs.core.some_QMARK_.call(null, $stateParams.artist)) {
-    var o_SHARP__9850 = $scope;
-    o_SHARP__9850["title"] = $stateParams.artist.name;
-    return musicmashup.http.getRequest.call(null, $http, [cljs.core.str(musicmashup.constants.musicBrainzArtistInfoBaseUrl), cljs.core.str($stateParams.artist.musicBrainzId), cljs.core.str("?"), cljs.core.str(musicmashup.constants.musicBrainzJsonTag), cljs.core.str(musicmashup.constants.musicBrainzReleaseGroupsTag)].join(""), function(p1__9845_SHARP_) {
-      return musicmashup.artist.setup_relations.call(null, musicmashup.artist.evaluate_relations.call(null, musicmashup.artist.setup_relational_data.call(null, p1__9845_SHARP_)), $http);
-    });
+    var o_SHARP__14116 = $scope;
+    o_SHARP__14116["title"] = $stateParams.artist.name;
+    var musicBrainzId = $stateParams.artist.musicBrainzId;
+    return musicmashup.http.getRequest.call(null, $http, [cljs.core.str(musicmashup.constants.musicBrainzArtistInfoBaseUrl), cljs.core.str(musicBrainzId), cljs.core.str("?"), cljs.core.str(musicmashup.constants.musicBrainzJsonTag), cljs.core.str(musicmashup.constants.musicBrainzReleaseGroupsTag)].join(""), function(musicBrainzId) {
+      return function(p1__14111_SHARP_) {
+        musicmashup.wiki.setup_wiki.call(null, $http, p1__14111_SHARP_, function(musicBrainzId) {
+          return function(wiki) {
+            return cljs.core.reset_BANG_.call(null, musicmashup.artist.artistWiki, wiki);
+          };
+        }(musicBrainzId));
+        return musicmashup.albumArt.setup_album_art.call(null, p1__14111_SHARP_, $http);
+      };
+    }(musicBrainzId));
   } else {
     return null;
   }
@@ -30472,12 +30510,12 @@ musicmashup.artistcard.hasArtist = function musicmashup$artistcard$hasArtist(art
   return cljs.core.some_QMARK_.call(null, artist);
 };
 musicmashup.artistcard.musicMashup_artistCardController = ["$scope", "$state", "$stateParams", function($scope, $state, $stateParams) {
-  var o_SHARP__9816 = $scope;
-  o_SHARP__9816["openArtist"] = function(o_SHARP__9816) {
-    return function(p1__9815_SHARP_) {
-      return musicmashup.artistcard.openArtist.call(null, p1__9815_SHARP_, $state, $stateParams);
+  var o_SHARP__10078 = $scope;
+  o_SHARP__10078["openArtist"] = function(o_SHARP__10078) {
+    return function(p1__10077_SHARP_) {
+      return musicmashup.artistcard.openArtist.call(null, p1__10077_SHARP_, $state, $stateParams);
     };
-  }(o_SHARP__9816);
+  }(o_SHARP__10078);
   var o_SHARP_ = $scope;
   o_SHARP_["hasArtist"] = musicmashup.artistcard.hasArtist;
   return o_SHARP_;
@@ -30516,8 +30554,8 @@ musicmashup.main.scrape_music_brainz = function musicmashup$main$scrape_music_br
 };
 musicmashup.main.search = function musicmashup$main$search($http, $scope) {
   return musicmashup.main.get_music_brainz_data.call(null, $http, $scope.artist, function(data) {
-    var scraped = cljs.core.mapv.call(null, function(p1__9810_SHARP_) {
-      return musicmashup.main.scrape_music_brainz.call(null, p1__9810_SHARP_);
+    var scraped = cljs.core.mapv.call(null, function(p1__10072_SHARP_) {
+      return musicmashup.main.scrape_music_brainz.call(null, p1__10072_SHARP_);
     }, data);
     var o_SHARP_ = $scope;
     o_SHARP_["artistData"] = cljs.core.clj__GT_js.call(null, scraped);
@@ -30525,14 +30563,14 @@ musicmashup.main.search = function musicmashup$main$search($http, $scope) {
   });
 };
 musicmashup.main.musicMashup_mainController = ["$scope", "$http", "$sce", function($scope, $http, $sce) {
-  var o_SHARP__9811 = $scope;
-  o_SHARP__9811["artist"] = "Nirvana";
-  var o_SHARP__9812 = $scope;
-  o_SHARP__9812["search"] = function(o_SHARP__9812) {
+  var o_SHARP__10073 = $scope;
+  o_SHARP__10073["artist"] = "Nirvana";
+  var o_SHARP__10074 = $scope;
+  o_SHARP__10074["search"] = function(o_SHARP__10074) {
     return function() {
       return musicmashup.main.search.call(null, $http, $scope);
     };
-  }(o_SHARP__9812);
+  }(o_SHARP__10074);
   return musicmashup.main.search.call(null, $http, $scope);
 }];
 angular.module("musicMashup").controller("mainController", musicmashup.main.musicMashup_mainController);
