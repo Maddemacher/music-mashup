@@ -1,9 +1,5 @@
 <div>
 	<h1>{{title}}</h1>
-	<img ng-src="{{coverArt}}">
-	<div>
-		<span ng-bind-html="description()"></span>
-	</div>
 
 	<div class="well" ng-if="showWiki">
 		<label>Wiki</label>
@@ -15,6 +11,10 @@
 	<div class="well" ng-if="showAlbums">
 		<label>Albums</label>
 		<br/>
-		<span>{{interestingRelations}}</span>
+		<div ng-repeat="alb in albums">
+			<span>{{alb.title}}</span>
+			<br/>
+			<img ng-src="{{alb.coverart.small}}">
+		</div>
 	</div>
 </div>

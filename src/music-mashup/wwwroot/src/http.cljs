@@ -8,7 +8,6 @@
 		(.error  (fn [result]
 			(println "Unable to retreive data for " url " returned with result " result)))))
 
-
 (defn jsonpRequest [$http url onSuccess]
 	(send-get-request $http.jsonp url onSuccess))
 
