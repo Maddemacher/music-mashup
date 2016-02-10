@@ -7,7 +7,9 @@
 	[musicmashup.constants :as constants]
 	[musicmashup.http :as http]
   [musicmashup.albumArt :as albumArt]
-  [musicmashup.wiki :as wiki]))
+  [musicmashup.wiki :as wiki]
+  [goog.string :as s]
+ 	[goog.string.format]))
 
 (def artistWiki (atom {}))
 (def artistAlbums (atom []))
@@ -25,20 +27,18 @@
 	(add-watch artistAlbums :albumWatcher
 		(fn [key atom old-state new-state]
    		(println "albums atom changed")
+   		(println new-state)
     	(! $scope.showAlbums true)))
 
 	(if (some? (.-artist $stateParams))
 		(do (! $scope.title (.-artist.name $stateParams))
 
    		(let [musicBrainzId (.-artist.musicBrainzId $stateParams)]
-	   		(http/getRequest $http
-					(str constants/musicBrainzArtistInfoBaseUrl
-						musicBrainzId
-						"?"
-						constants/musicBrainzJsonTag
-						constants/musicBrainzReleaseGroupsTag)
-					#(do (wiki/setup-wiki $http % (fn [wiki] (reset! artistWiki wiki)))
-       			 	 (albumArt/setup-album-art % $http)
+	   		(http/getRequest $http (s/format constants/musicBrainzArtistInfoBaseUrl	musicBrainzId)
+					#(do (wiki/setup-wiki $http %
+                           (fn [wiki] (reset! artistWiki wiki)))
+       			 	 (albumArt/setup-album-art % @artistAlbums $http
+                                       (fn [updatedAlbums] (reset! artistAlbums updatedAlbums)))
         ))
     ))))
 
